@@ -1,0 +1,4 @@
+<div *ngIf="recipes.length === 0">No recipes found.</div>
+<div *ngIf="recipes.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+  <app-recipe-item *ngFor="let recipe of recipes" [recipe]="recipe"></app-recipe-item>
+</div>
