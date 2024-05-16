@@ -1,10 +1,17 @@
-<!-- Navbar -->
+<!-- Header -->
 <header class="bg-gray-800 text-white p-4">
-  <div class="container mx-auto">
-    <h1 class="text-2xl">Recipe Land</h1>
+  <div class="container mx-auto flex justify-between items-center">
+    <h1 class="text-2xl">Recipe App</h1>
     <nav>
       <a routerLink="/" class="text-white hover:underline mr-4">Home</a>
-      <a routerLink="/search" class="text-white hover:underline">Search Recipes</a>
+      <a routerLink="/search" class="text-white hover:underline mr-4">Search Recipes</a>
+      <ng-container *ngIf="isLoggedIn; else loggedOut">
+        <button (click)="logout()" class="text-white hover:underline mr-4">Logout</button>
+      </ng-container>
+      <ng-template #loggedOut>
+        <a routerLink="/login" class="text-white hover:underline mr-4">Login</a>
+        <a routerLink="/register" class="text-white hover:underline">Register</a>
+      </ng-template>
     </nav>
   </div>
 </header>
@@ -17,6 +24,6 @@
 <!-- Footer -->
 <footer class="bg-gray-800 text-white p-4 mt-8">
   <div class="container mx-auto text-center">
-    <p>&copy; 2024 Recipe Land. All rights reserved.</p>
+    <p>&copy; 2024 Recipe App. All rights reserved.</p>
   </div>
 </footer>

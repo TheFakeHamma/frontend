@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   email: string = '';
@@ -16,11 +16,11 @@ export class LoginComponent {
   login() {
     const data = { email: this.email, password: this.password };
     this.authService.login(data).subscribe(
-      (response) => {
-        localStorage.setItem('token', response.token);
+      response => {
+        this.authService.setToken(response.token);
         this.router.navigate(['/']);
       },
-      (error) => {
+      error => {
         console.error('Login error', error);
       }
     );
