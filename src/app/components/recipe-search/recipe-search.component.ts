@@ -15,6 +15,8 @@ export class RecipeSearchComponent implements OnInit {
   selectedRecipe: any = null;
   selectedListId: number | null = null;
   searchPerformed: boolean = false;
+  randomQuery: string = '';
+  confirmationMessage: string = '';
 
   constructor(
     private recipeService: RecipeService,
@@ -38,6 +40,7 @@ export class RecipeSearchComponent implements OnInit {
   getRandomRecipes(): void {
     this.recipeService.getRandomRecipes(8).subscribe((response) => {
       this.recipes = response.hits.map((hit) => hit.recipe);
+      this.randomQuery = response.query;
       this.searchPerformed = false;
     });
   }
@@ -60,7 +63,7 @@ export class RecipeSearchComponent implements OnInit {
   }
 
   addRecipeToList(): void {
-    if (this.selectedRecipe && this.selectedListId) {
+    if (this.selectedRecipe && this.selectedListId !== null) {
       const recipeData = {
         recipe_url: this.selectedRecipe.uri,
         recipe_name: this.selectedRecipe.label,
@@ -74,6 +77,10 @@ export class RecipeSearchComponent implements OnInit {
         .subscribe(
           () => {
             this.closeAddToListModal();
+            this.confirmationMessage = 'Recipe added to list!';
+            setTimeout(() => {
+              this.confirmationMessage = '';
+            }, 3000);
           },
           (error) => {
             console.error('Failed to add recipe to list:', error);
@@ -83,5 +90,10 @@ export class RecipeSearchComponent implements OnInit {
     } else {
       alert('Please select a list.');
     }
+  }
+
+  getListNameById(listId: number): string {
+    const list = this.lists.find((list) => list.id === listId);
+    return list ? list.name : '';
   }
 }

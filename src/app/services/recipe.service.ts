@@ -20,9 +20,11 @@ export class RecipeService {
     );
   }
 
-  getRandomRecipes(limit: number): Observable<{ hits: { recipe: Recipe }[] }> {
+  getRandomRecipes(
+    limit: number
+  ): Observable<{ query: string; hits: { recipe: Recipe }[] }> {
     const params = new HttpParams().set('limit', limit.toString());
-    return this.http.get<{ hits: { recipe: Recipe }[] }>(
+    return this.http.get<{ query: string; hits: { recipe: Recipe }[] }>(
       `${this.apiUrl}/recipes`,
       { params }
     );
