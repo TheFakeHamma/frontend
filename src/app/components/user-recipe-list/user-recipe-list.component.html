@@ -14,10 +14,12 @@
             </select>
         </div>
         <div class="ml-4 flex items-center">
-            <button (click)="openEditListModal(selectedList)" class="p-1 bg-yellow-500 text-white rounded mr-2">
+            <button *ngIf="selectedListId !== null" (click)="openEditListModal(getListById(selectedListId!))"
+                class="p-1 bg-yellow-500 text-white rounded mr-2">
                 Edit
             </button>
-            <button (click)="deleteListWithConfirmation(selectedListId!)" class="p-1 bg-red-500 text-white rounded">
+            <button *ngIf="selectedListId !== null" (click)="deleteListWithConfirmation(selectedListId!)"
+                class="p-1 bg-red-500 text-white rounded">
                 Delete
             </button>
         </div>
@@ -33,7 +35,7 @@
                     class="w-full h-40 object-cover rounded-md mb-4" />
                 <h3 class="text-lg font-bold mb-2">{{ item.recipe_name }}</h3>
                 <a [href]="item.recipe_uri" target="_blank" class="text-blue-500 mb-2">View Recipe</a>
-                <button (click)="removeRecipeFromList(selectedListId, item.custom_recipe_id)"
+                <button (click)="removeRecipeFromList(selectedListId!, item.custom_recipe_id)"
                     class="p-2 bg-red-500 text-white rounded">Remove</button>
             </div>
         </div>
