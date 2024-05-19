@@ -1,0 +1,6 @@
+<div>
+    <select [(ngModel)]="selectedListId" class="border p-2 mr-2">
+        <option *ngFor="let list of lists" [value]="list.id">{{ list.name }}</option>
+    </select>
+    <button (click)="addRecipeToList()" class="bg-green-500 text-white p-2">Add to List</button>
+</div>
