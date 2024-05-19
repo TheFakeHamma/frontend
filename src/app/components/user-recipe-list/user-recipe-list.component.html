@@ -2,32 +2,43 @@
     <div class="mb-4">
         <h2 class="text-2xl font-bold mb-2">Create New List</h2>
         <input type="text" [(ngModel)]="newListName" placeholder="List Name" class="p-2 border rounded w-full" />
-        <button (click)="createList()" class="mt-2 p-2 bg-blue-500 text-white rounded">
-            Create List
-        </button>
+        <button (click)="createList()" class="mt-2 p-2 bg-blue-500 text-white rounded">Create List</button>
     </div>
 
-    <div *ngFor="let list of lists" class="mb-6 border-b pb-4">
-        <div class="flex justify-between items-center mb-2">
-            <h2 class="text-xl font-bold">{{ list.name }}</h2>
-            <div>
-                <button (click)="openEditListModal(list)" class="mr-2 p-1 bg-yellow-500 text-white rounded">
-                    Edit
-                </button>
-                <button (click)="deleteList(list.id)" class="p-1 bg-red-500 text-white rounded">
-                    Delete
-                </button>
-            </div>
+    <div class="mb-4 flex items-center">
+        <div class="w-full">
+            <label for="listDropdown" class="block text-xl font-bold mb-2">Select List:</label>
+            <select id="listDropdown" [(ngModel)]="selectedListId" (change)="onListChange()"
+                class="p-2 border rounded w-full">
+                <option *ngFor="let list of lists" [ngValue]="list.id">{{ list.name }}</option>
+            </select>
         </div>
-
-        <div *ngFor="let item of list.items" class="flex items-center mb-2">
-            <img [src]="item.recipe_image" alt="{{ item.recipe_name }}" class="w-16 h-16 mr-4 rounded" />
-            <p class="flex-1">{{ item.recipe_name }}</p>
-            <button (click)="removeRecipeFromList(list.id, item.custom_recipe_id)"
-                class="p-1 bg-red-500 text-white rounded">
-                Remove
+        <div class="ml-4 flex items-center">
+            <button (click)="openEditListModal(selectedList)" class="p-1 bg-yellow-500 text-white rounded mr-2">
+                Edit
+            </button>
+            <button (click)="deleteListWithConfirmation(selectedListId!)" class="p-1 bg-red-500 text-white rounded">
+                Delete
             </button>
         </div>
+    </div>
+
+    <div *ngIf="selectedListId !== null">
+        <h2 class="text-xl font-bold mb-4">{{ getListNameById(selectedListId) }}</h2>
+        <div *ngIf="getItemsByListId(selectedListId).length > 0"
+            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div *ngFor="let item of getItemsByListId(selectedListId)"
+                class="border rounded-lg p-4 flex flex-col items-center">
+                <img [src]="item.recipe_image" alt="{{ item.recipe_name }}"
+                    class="w-full h-40 object-cover rounded-md mb-4" />
+                <h3 class="text-lg font-bold mb-2">{{ item.recipe_name }}</h3>
+                <a [href]="item.recipe_uri" target="_blank" class="text-blue-500 mb-2">View Recipe</a>
+                <button (click)="removeRecipeFromList(selectedListId, item.custom_recipe_id)"
+                    class="p-2 bg-red-500 text-white rounded">Remove</button>
+            </div>
+        </div>
+        <div *ngIf="getItemsByListId(selectedListId).length === 0" class="text-gray-500 text-center">No recipes in this
+            list.</div>
     </div>
 
     <!-- Add Recipe Modal -->
@@ -36,7 +47,7 @@
             <h2 class="text-xl font-bold mb-2">Add to List</h2>
             <label for="list" class="block mb-2">Select List:</label>
             <select id="list" [(ngModel)]="selectedListId" class="p-2 border rounded w-full mb-4">
-                <option *ngFor="let list of lists" [value]="list.id">{{ list.name }}</option>
+                <option *ngFor="let list of lists" [ngValue]="list.id">{{ list.name }}</option>
             </select>
             <button (click)="addRecipeToList()" class="p-2 bg-blue-500 text-white rounded w-full mb-2">Add</button>
             <button (click)="closeAddToListModal()" class="p-2 bg-gray-500 text-white rounded w-full">Cancel</button>

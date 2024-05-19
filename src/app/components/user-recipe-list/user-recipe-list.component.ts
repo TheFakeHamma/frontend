@@ -12,9 +12,10 @@ export class UserRecipeListComponent implements OnInit {
   lists: any[] = [];
   newListName: string = '';
   selectedRecipe: any;
-  selectedListId: number = 0;
+  selectedListId: number | null = null;
   editListId: number | null = null;
   editListName: string = '';
+  selectedList: any;
 
   constructor(private recipeListService: RecipeListService) {}
 
@@ -25,6 +26,10 @@ export class UserRecipeListComponent implements OnInit {
   getLists(): void {
     this.recipeListService.getLists().subscribe((lists) => {
       this.lists = lists;
+      if (lists.length > 0) {
+        this.selectedListId = lists[0].id;
+        this.selectedList = lists[0];
+      }
     });
   }
 
@@ -35,6 +40,8 @@ export class UserRecipeListComponent implements OnInit {
         .subscribe((list) => {
           this.lists.push(list);
           this.newListName = '';
+          this.selectedListId = list.id;
+          this.selectedList = list;
         });
     }
   }
@@ -42,16 +49,24 @@ export class UserRecipeListComponent implements OnInit {
   deleteList(id: number): void {
     this.recipeListService.deleteList(id).subscribe(() => {
       this.lists = this.lists.filter((list) => list.id !== id);
+      if (this.lists.length > 0) {
+        this.selectedListId = this.lists[0].id;
+        this.selectedList = this.lists[0];
+      } else {
+        this.selectedListId = null;
+        this.selectedList = null;
+      }
     });
   }
 
   openAddToListModal(recipe: any): void {
     this.selectedRecipe = recipe;
+    this.selectedListId = null; // Reset selected list
   }
 
   closeAddToListModal(): void {
     this.selectedRecipe = null;
-    this.selectedListId = 0;
+    this.selectedListId = null;
   }
 
   addRecipeToList(): void {
@@ -64,7 +79,6 @@ export class UserRecipeListComponent implements OnInit {
         custom_recipe_id: CryptoJS.MD5(this.selectedRecipe.uri).toString(),
         recipe_uri: this.selectedRecipe.url,
       };
-      console.log('Adding recipe to list with data:', recipeData);
       this.recipeListService
         .addRecipeToList(this.selectedListId, recipeData)
         .subscribe({
@@ -129,5 +143,45 @@ export class UserRecipeListComponent implements OnInit {
         alert('Failed to remove recipe from list.');
       },
     });
+  }
+
+  onListChange(): void {
+    this.selectedList = this.lists.find(
+      (list) => list.id === this.selectedListId
+    );
+    this.updateRecipesView();
+  }
+
+  getListNameById(listId: number): string {
+    const list = this.lists.find((list) => list.id === listId);
+    return list ? list.name : '';
+  }
+
+  getItemsByListId(listId: number): RecipeListItem[] {
+    const list = this.lists.find((list) => list.id === listId);
+    return list ? list.items : [];
+  }
+
+  updateRecipesView(): void {
+    if (this.selectedListId !== null) {
+      const list = this.getListById(this.selectedListId);
+      if (list && list.items) {
+        // Trigger change detection to update the view
+        this.lists = [...this.lists];
+      }
+    }
+  }
+
+  getListById(listId: number): any {
+    return this.lists.find((list) => list.id === listId);
+  }
+
+  deleteListWithConfirmation(id: number): void {
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this list?'
+    );
+    if (confirmed) {
+      this.deleteList(id);
+    }
   }
 }
