@@ -14,6 +14,7 @@ export class RecipeSearchComponent implements OnInit {
   lists: any[] = [];
   selectedRecipe: any = null;
   selectedListId: number | null = null;
+  searchPerformed: boolean = false;
 
   constructor(
     private recipeService: RecipeService,
@@ -22,14 +23,23 @@ export class RecipeSearchComponent implements OnInit {
 
   ngOnInit(): void {
     this.getLists();
+    this.getRandomRecipes(); // Fetch random recipes on load
   }
 
-  searchRecipes() {
+  searchRecipes(): void {
     if (this.query) {
       this.recipeService.searchRecipes(this.query).subscribe((response) => {
         this.recipes = response.hits.map((hit) => hit.recipe);
+        this.searchPerformed = true;
       });
     }
+  }
+
+  getRandomRecipes(): void {
+    this.recipeService.getRandomRecipes(8).subscribe((response) => {
+      this.recipes = response.hits.map((hit) => hit.recipe);
+      this.searchPerformed = false;
+    });
   }
 
   getLists(): void {
@@ -40,7 +50,7 @@ export class RecipeSearchComponent implements OnInit {
 
   openAddToListModal(recipe: any): void {
     this.selectedRecipe = recipe;
-    this.selectedListId = null;
+    this.selectedListId = null; // Reset selected list
     console.log('Selected Recipe:', this.selectedRecipe);
   }
 
