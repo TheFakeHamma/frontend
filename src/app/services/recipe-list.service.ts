@@ -16,6 +16,10 @@ export class RecipeListService {
     return this.http.get<RecipeList[]>(`${this.apiUrl}/recipe-lists`);
   }
 
+  getList(id: number): Observable<RecipeList> {
+    return this.http.get<RecipeList>(`${this.apiUrl}/recipe-lists/${id}`);
+  }
+
   createList(data: { name: string }): Observable<RecipeList> {
     return this.http.post<RecipeList>(`${this.apiUrl}/recipe-lists`, data);
   }

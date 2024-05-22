@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RecipeService } from '../../services/recipe.service';
 import { RecipeListService } from '../../services/recipe-list.service';
 import * as CryptoJS from 'crypto-js';
+import { RecipeList } from '../../models/recipe-list.model';
 
 @Component({
   selector: 'app-recipe-search',
@@ -11,7 +12,7 @@ import * as CryptoJS from 'crypto-js';
 export class RecipeSearchComponent implements OnInit {
   query: string = '';
   recipes: any[] = [];
-  lists: any[] = [];
+  lists: RecipeList[] = [];
   selectedRecipe: any = null;
   selectedListId: number | null = null;
   searchPerformed: boolean = false;
@@ -64,29 +65,42 @@ export class RecipeSearchComponent implements OnInit {
 
   addRecipeToList(): void {
     if (this.selectedRecipe && this.selectedListId !== null) {
-      const recipeData = {
-        recipe_url: this.selectedRecipe.uri,
-        recipe_name: this.selectedRecipe.label,
-        recipe_image: this.selectedRecipe.image,
-        custom_recipe_id: CryptoJS.MD5(this.selectedRecipe.uri).toString(),
-        recipe_uri: this.selectedRecipe.url,
-      };
-      console.log('Adding recipe to list with data:', recipeData);
-      this.recipeListService
-        .addRecipeToList(this.selectedListId, recipeData)
-        .subscribe(
-          () => {
-            this.closeAddToListModal();
-            this.confirmationMessage = 'Recipe added to list!';
-            setTimeout(() => {
-              this.confirmationMessage = '';
-            }, 3000);
-          },
-          (error) => {
-            console.error('Failed to add recipe to list:', error);
-            alert('Failed to add recipe to list.');
-          }
+      const customRecipeId = CryptoJS.MD5(this.selectedRecipe.uri).toString();
+
+      // Check if the recipe already exists in the selected list
+      this.recipeListService.getList(this.selectedListId).subscribe((list) => {
+        const recipeExists = list.items.some(
+          (recipe: any) => recipe.custom_recipe_id === customRecipeId
         );
+
+        if (recipeExists) {
+          alert('This recipe is already in the selected list.');
+        } else {
+          const recipeData = {
+            recipe_url: this.selectedRecipe.uri,
+            recipe_name: this.selectedRecipe.label,
+            recipe_image: this.selectedRecipe.image,
+            custom_recipe_id: customRecipeId,
+            recipe_uri: this.selectedRecipe.url,
+          };
+          console.log('Adding recipe to list with data:', recipeData);
+          this.recipeListService
+            .addRecipeToList(this.selectedListId as number, recipeData) // Add type assertion
+            .subscribe(
+              () => {
+                this.closeAddToListModal();
+                this.confirmationMessage = 'Recipe added to list!';
+                setTimeout(() => {
+                  this.confirmationMessage = '';
+                }, 3000);
+              },
+              (error) => {
+                console.error('Failed to add recipe to list:', error);
+                alert('Failed to add recipe to list.');
+              }
+            );
+        }
+      });
     } else {
       alert('Please select a list.');
     }
