@@ -85,7 +85,7 @@ export class RecipeSearchComponent implements OnInit {
           };
           console.log('Adding recipe to list with data:', recipeData);
           this.recipeListService
-            .addRecipeToList(this.selectedListId as number, recipeData) // Add type assertion
+            .addRecipeToList(this.selectedListId as number, recipeData)
             .subscribe(
               () => {
                 this.closeAddToListModal();
