@@ -1,9 +1,11 @@
 <div class="container mx-auto p-4">
     <h2 class="text-2xl font-bold mb-4">Login</h2>
     <form (submit)="login()">
-        <input type="email" [(ngModel)]="email" name="email" placeholder="Email" class="border p-2 w-full mb-4">
+        <input type="email" [(ngModel)]="email" name="email" placeholder="Email" class="border p-2 w-full mb-4"
+            required>
         <input type="password" [(ngModel)]="password" name="password" placeholder="Password"
-            class="border p-2 w-full mb-4">
+            class="border p-2 w-full mb-4" required>
         <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Login</button>
     </form>
+    <div *ngIf="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</div>
 </div>
